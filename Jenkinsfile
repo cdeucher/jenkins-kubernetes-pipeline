@@ -28,7 +28,7 @@ spec:
     - name: SAMPLE_RANGE_NAME
       value: "Kabum!A1:B2000"
     - name: SAMPLE_SPREADSHEET_ID
-      value: "1oVEfoO179xnFzdndFHmwTb0Jo2xViEmZcyXmMZyLjEI"
+      value: "1A2gDd-xM2kEcSf5McjFIGqoh-S8Kj01swJScrdvkNrg"
     - name: WRITE_RANGE_NAME
       value: "Kabum"    
     command:
@@ -65,10 +65,16 @@ spec:
         script {
           def output = readFile('listToScrap.txt').trim()
           def outList = output.split(',').collect{it as String}
-          println outList
+          def html = ""
           outList.each{
              println " scraping url: ${it}"  
-             def html = processScraping(it)   
+             //def html = processScraping(it) 
+             //def html = "${it}".toURL().text
+             container('google') {
+               //html = sh returnStatus: true, script: "python web.py ${it}"
+               html = sh script: "python web.py ${it}", returnStdout:true
+             }
+             println html  
              (description, price) = transformHTML(html)
              priceList.put(description, price)
           }
